@@ -1,0 +1,43 @@
+name: Meu Scraper Diario
+
+# Configura QUANDO o script vai rodar
+on:
+  schedule:
+    # Este cron roda todo dia às 09:00 (UTC) - o que seria 06:00 no horário de Brasília
+    - cron: '0 9 * * *' 
+  workflow_dispatch: # Permite que você clique em um botão para rodar manualmente!
+
+# Configura O QUE o GitHub vai fazer
+jobs:
+  rodar-scraper:
+    runs-on: ubuntu-latest # Usa um "computador" virtual com Linux (gratuito)
+
+    steps:
+      # 1. Copia seus arquivos do repositório para o computador virtual
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      # 2. Instala o Python
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Mude para a versão que você usa
+
+      # 3. Instala as bibliotecas do seu requirements.txt
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      # 4. Roda o seu scraper!
+      - name: Rodar o script
+        run: python scraper.py
+
+      # 5. (OPCIONAL) Salva os dados gerados de volta no GitHub
+      # Se o seu scraper gera um arquivo "dados.csv", isso salva ele no repositório
+      - name: Salvar os resultados
+        run: |
+          git config --global user.name "Bot do GitHub"
+          git config --global user.email "bot@exemplo.com"
+          git add .
+          # O comando abaixo tenta salvar, mas se não houver dados novos, ele não dá erro
+          git commit -m "Atualizando dados diários" || echo "Sem mudanças"
+          git push
