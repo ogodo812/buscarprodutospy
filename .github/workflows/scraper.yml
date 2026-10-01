@@ -41,3 +41,11 @@ jobs:
           # O comando abaixo tenta salvar, mas se não houver dados novos, ele não dá erro
           git commit -m "Atualizando dados diários" || echo "Sem mudanças"
           git push
+
+      # Opcional: Faz o upload do ficheiro Excel para download direto no GitHub
+      - name: Disponibilizar Excel para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-oportunidades
+          path: "*.xlsx"
+          retention-days: 7 # O ficheiro fica disponível para download durante 7 dias
